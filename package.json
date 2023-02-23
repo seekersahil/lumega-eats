@@ -2,9 +2,10 @@
   "name": "lumega-eats",
   "version": "1.0.0",
   "description": "A food delivery App",
-  "main": "index.html",
   "scripts": {
-    "test": "jest"
+    "test": "jest",
+    "start": "parcel index.html",
+    "build": "parcel build index.html"
   },
   "repository": {
     "type": "git",
@@ -18,10 +19,12 @@
   "homepage": "https://github.com/seekersahil/lumega-eats#readme",
   "devDependencies": {
     "parcel": "^2.8.3",
+    "process": "^0.11.10",
     "tailwindcss": "^3.2.7"
   },
   "dependencies": {
     "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "react-dom": "^18.2.0",
+    "react-router-dom": "^6.8.1"
   }
 }
