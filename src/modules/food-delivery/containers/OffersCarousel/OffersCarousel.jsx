@@ -11,7 +11,7 @@ const CarouselItem = ({item}) => {
 const OffersCarousel = () => {
   let offers = useRestaurantListImport().carouselsList;
   return (
-	<div className='bg-gray-900'>
+	(offers[0]?.cardType!=="seeAllRestaurants" && <div className='bg-gray-900'>
 		<div className="carousel-items flex flex-wrap justify-center">
 			{
 				offers?.map((offer,index)=>{
@@ -22,7 +22,7 @@ const OffersCarousel = () => {
 				})
 			}
 		</div>
-	</div>
+	</div>)
   )
 }
 

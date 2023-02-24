@@ -8,7 +8,7 @@ const ShimmerCard = () => {
   )
 }
 
-const Shimmer = ({repeat}) => {
+const ShimmerList = ({repeat}) => {
 	return (
 		<div className="restaurant-list-items flex flex-wrap justify-center my-5">
 			{
@@ -18,4 +18,4 @@ const Shimmer = ({repeat}) => {
 	)
 }
 
-export default Shimmer
+export default {ShimmerList}

@@ -17,15 +17,15 @@ const RestaurantCard = ({restaurant}) => {
 		aggregatedDiscountInfoV2
 	} = restaurant.data;
 	return(
-		<Link to={`/restaurant/${slugs.city}/${slugs.restaurant}/${id}`} key={id} className='restaurant-card sm:w-1/3 md:w-1/4 lg:w-1/4 xl:w-1/5 min-h-40 flex flex-col mx-5 my-10 hover:shadow-lg'>
+		<Link to={`/restaurant/${slugs?.city}/${slugs?.restaurant}/${id}`} key={id} className='restaurant-card sm:w-1/3 md:w-1/4 lg:w-1/4 xl:w-1/5 min-h-40 flex flex-col mx-5 my-10 hover:shadow-lg'>
 			<img src={ process.env.IMAGE_API_URL + cloudinaryImageId } alt="" />
 			<div className="restaurant-info py-5 px-5 flex flex-col items-left">
 				<h1 className='restaurant-name text-xl font-semibold'>{name}</h1>
-				<p className='text-sm text-gray-500'>{cuisines.join(", ")}</p>
+				<p className='text-sm text-gray-500'>{cuisines?.join(", ")}</p>
 				<div className="restaurant-meta flex justify-between items-center mt-3">
-					<p className={"flex py-0.5 text-sm px-1"+(avgRating!=="--"?(+avgRating>=4?" text-white bg-teal-600":" text-white bg-[#db7c38]"):(" text-gray-400"))}><AiFillStar className='my-1 mr-1'/>{avgRating}</p>
-					<p className='text-xs text-gray-500'>{slaString}</p>
-					<p className='text-xs text-gray-500'>{costForTwoString}</p>
+					<p key={id+"rating"} className={"flex py-0.5 text-sm px-1"+(avgRating!=="--"?(+avgRating>=4?" text-white bg-teal-600":" text-white bg-[#db7c38]"):(" text-gray-400"))}><AiFillStar className='my-1 mr-1'/>{avgRating}</p>
+					<p key={id+"sla"} className='text-xs text-gray-500'>{slaString}</p>
+					<p key={id+"cost"} className='text-xs text-gray-500'>{costForTwoString}</p>
 				</div>
 				<div className="line h-0.5 bg-gray-200 mt-5"></div>
 				<p className='offer flex p-2 text-amber-800'>
@@ -54,7 +54,7 @@ const RestaurantList = () => {
 
   if(restaurantList?.length === 0) {
 	return(
-			<Shimmer repeat={12}/>
+			<Shimmer.ShimmerList repeat={12}/>
 	)}
 
   return (

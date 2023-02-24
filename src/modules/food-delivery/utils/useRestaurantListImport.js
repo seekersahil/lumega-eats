@@ -14,11 +14,19 @@ const useRestaurantListImport = (filter = "RELEVANCE") => {
     let index = {
       RELEVANCE: 2,
     };
-    setRestaurantList(json.data?.cards[index[filter] || 0]?.data?.data?.cards);
+    let cards = json.data.cards;
+    cards?.forEach((card) => {
+      if (card?.cardType === "seeAllRestaurants") {
+        setRestaurantList(card?.data?.data?.cards || []);
+      }
+      if (
+        card?.cardType === "carousel" &&
+        card?.data?.subtype === "topCarousel"
+      ) {
+        setCarouselsList(card?.data?.data?.cards || []);
+      }
+    });
     setSorts(json.data?.sorts);
-    if (filter === "RELEVANCE") {
-      setCarouselsList(json.data?.cards[0]?.data?.data?.cards);
-    }
   }
 
   useEffect(() => {
