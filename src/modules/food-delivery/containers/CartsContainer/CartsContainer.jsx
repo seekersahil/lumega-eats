@@ -36,16 +36,27 @@ const CartComponent = ({restaurant,products,total,cartData,index,setCartData}) =
 			const {
 				[id]:{},
 				...rest
-			} = cartData.cartItems;
-			setCartData((prev)=>({
-				...prev,
-				[index]:{
-					...prev[index],
-					cartItems: {
-						...rest
+			} = cartData[index].cartItems;
+			if(JSON.stringify(rest)==="{}"){
+				const {
+					[index]:{},
+					...restCarts
+				} = cartData;
+				setCartData({
+					...restCarts
+				})
+			}
+			else{
+				setCartData((prev)=>({
+					...prev,
+					[index]:{
+						...prev[index],
+						cartItems: {
+							...rest
+						}
 					}
-				}
-			}))
+				}));
+			}
 		}
 	};
 	const{name,area_name,cloudinary_image_id} = restaurant;
@@ -95,14 +106,13 @@ const CartComponent = ({restaurant,products,total,cartData,index,setCartData}) =
 const CartContainer = ({cart, index, setCarts}) => {
 	const [products,setProducts] = useState({});
 	const [total, setTotal] = useState(0);
-  const restaurantDetails = cart?.cartMeta?.restaurant_details;
+  const restaurantDetails = cart[index]?.cartMeta?.restaurant_details;
   useEffect(()=>{
-		setProducts(cart?.cartItems)
+		setProducts(cart[index]?.cartItems)
 	},[cart])
   useEffect(()=>{
 		setTotal(Object.values(products)?.reduce((acc,curr)=>acc+(+curr?.quantity*+curr?.items[0].effective_item_price),0));
 	},[products])
-  console.log(cart)
   return (
     <CartComponent index={index} restaurant={restaurantDetails} products={products} total={total} setCartData={setCarts} cartData={cart}/>
     )
@@ -121,9 +131,7 @@ const CartsContainer = () => {
     <div className=' bg-slate-200 min-h-screen relative p-10'>
       {cartsNumber<=0&&(<EmptyCart/>)}
       {Object.keys(carts).map(key=>(
-		  <>
-			{Object.values(carts[key]?.cartItems)?.length>0&&(<CartContainer index={key} cart={carts[key]} setCarts={setCarts}/>)}
-		  </>	
+			<CartContainer index={key} cart={carts} setCarts={setCarts}/>
 	  	)
 	  )}
     </div>
