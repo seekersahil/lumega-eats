@@ -5,7 +5,6 @@ import {AiFillStar} from "react-icons/ai";
 import {MdLocalOffer} from "react-icons/md";
 import {BiFoodTag} from "react-icons/bi";
 import "./MenuContainer.css";
-import {CartContext} from "../../utils";
 
 const RestaurantHeader = ({restaurant}) => {
 	const {
@@ -62,7 +61,6 @@ const RestaurantHeader = ({restaurant}) => {
 }
 
 const RestaurantMenu = ({restaurant}) => {
-	const {cartData,setCartData} = useContext(CartContext);
 	
 	const widgetContents = document.querySelectorAll(".widget-content");
 	const [activeWidget, setActiveWidget] = useState(widgetContents[0]?.id)

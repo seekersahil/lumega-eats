@@ -1,13 +1,19 @@
-import React,{useContext} from 'react'
+import React,{useContext, useState, useEffect} from 'react'
 import logo from "../../../../assets/dark_icon.png";
 import {Link} from "react-router-dom";
 import {AiOutlineShoppingCart} from "react-icons/ai";
 import {FaUserCircle} from "react-icons/fa";
 import {SearchBarHeader} from "../SearchBar/SearchBar";
-import {CartContext} from "../../utils";
+import { CartsContext} from "../../utils";
 
 const Navbar = ({sticky = true}) => {
-  const {cartData}= useContext(CartContext);
+  const {carts}= useContext(CartsContext);
+  const [cartsNumber, setCartsNumber] = useState(0)
+  useEffect(()=>{
+	setCartsNumber(Object.values(carts)?.reduce((acc,curr)=>
+		acc + (Object.keys(curr.cartItems).length)
+		,0))
+  },[carts])
   return (
 	<nav className={"flex justify-between px-10 py-3 shadow-sm bg-white w-full z-10"+(sticky?" fixed":"")}>
 		<div className="logo">
@@ -39,14 +45,14 @@ const Navbar = ({sticky = true}) => {
 			))}
 			<div className="cart flex m-5 justify-center content-center">
 				<Link to="/cart">
-					<div className="flex cart">
-						<AiOutlineShoppingCart className="m-1"/>({Object.keys(cartData?.cartItems).length})
+					<div className="flex carts">
+						<AiOutlineShoppingCart className="m-1"/>({cartsNumber})
 					</div>
 				</Link>
 			</div>
-				<Link to="/profile" className='flex m-5 justify-center content-center cursor-pointer'>
-					<FaUserCircle className='m-1'/> Login/Signup
-				</Link>
+			<Link to="/profile" className='flex m-5 justify-center content-center cursor-pointer'>
+				<FaUserCircle className='m-1'/> Login/Signup
+			</Link>
 		</ul>
 	</nav>
   )

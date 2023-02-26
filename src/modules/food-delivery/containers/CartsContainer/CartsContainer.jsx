@@ -1,7 +1,7 @@
 import React,{useState, useEffect, useContext} from 'react';
-import { Link } from 'react-router-dom';
+import { Link } from "react-router-dom";
 import { BiFoodTag } from "react-icons/bi";
-import { CartContext, useSubtractProductFromCart } from '../../utils';
+import { CartsContext } from '../../utils';
 
 const EmptyCart= () => {
 	return (
@@ -16,36 +16,41 @@ const EmptyCart= () => {
 	)
 }
 
-const CartItemsContainer = ({restaurant,products,total,cartData, setCartData}) => {
-	const updateQuantity = (id, newQuantity) => {
-		if(newQuantity>0)
-		{
+const CartComponent = ({restaurant,products,total,cartData,index,setCartData}) =>{
+	const updateQuantity = (index, id, newQuantity) => {
+		if(newQuantity>0){
 			setCartData((prev)=>({
 				...prev,
-				cartItems: {
-					...prev.cartItems,
-					[id]:{
-						...prev.cartItems[id],
-						quantity: newQuantity
+				[index]:{
+					...prev[index],
+					cartItems: {
+						...prev[index].cartItems,
+						[id]:{
+							...prev[index].cartItems[id],
+							quantity: newQuantity
+						}
 					}
 				}
-			}));
-		} else {		
+			}))
+		} else {
 			const {
 				[id]:{},
 				...rest
 			} = cartData.cartItems;
 			setCartData((prev)=>({
 				...prev,
-				cartItems: {
-					...rest
+				[index]:{
+					...prev[index],
+					cartItems: {
+						...rest
+					}
 				}
-			}));
+			}))
 		}
 	};
 	const{name,area_name,cloudinary_image_id} = restaurant;
 	return (
-		<div className="bg-white min-h-96 h-full shadow-sm p-10 flex flex-col">
+		<div className="bg-white min-h-96 h-full shadow-sm p-10 mb-10 flex flex-col">
 			<div className="restaurant-details flex">
 				<div className="restaurant-image">
 					<img src={process.env.CART_IMAGE_URL+cloudinary_image_id} alt={name} />
@@ -68,9 +73,9 @@ const CartItemsContainer = ({restaurant,products,total,cartData, setCartData}) =
 									<div className=" ml-5 food-name flex items-center">{name}</div>
 								</div>
 								<div className="text-green-700 font-semibold quantity-button flex justify-between items-center border my-2">
-									<button onClick={()=>updateQuantity(itemId,quantity-1)} className="minus p-2">-</button>
+									<button onClick={()=>updateQuantity(index,itemId,quantity-1)} className="minus p-2">-</button>
 									<div className="quantity p-2">{quantity}</div>
-									<button onClick={()=>updateQuantity(itemId,quantity+1)} className="plus p-2">+</button>
+									<button onClick={()=>updateQuantity(index,itemId,quantity+1)} className="plus p-2">+</button>
 								</div>
 								<div className="price flex items-center">₹ {+effective_item_price*quantity}</div>
 							</div>)
@@ -87,25 +92,42 @@ const CartItemsContainer = ({restaurant,products,total,cartData, setCartData}) =
 	);
 }
 
-
-const CartContainer = () => {
-	document.title = "Cart | Lumega Eats"
-	const {cartData,setCartData} = useContext(CartContext);
+const CartContainer = ({cart, index, setCarts}) => {
 	const [products,setProducts] = useState({});
-	const restaurantDetails = cartData?.cartMeta?.restaurant_details;
 	const [total, setTotal] = useState(0);
-	useEffect(()=>{
-		setProducts(cartData?.cartItems)
-	},[cartData])
-	useEffect(()=>{
+  const restaurantDetails = cart?.cartMeta?.restaurant_details;
+  useEffect(()=>{
+		setProducts(cart?.cartItems)
+	},[cart])
+  useEffect(()=>{
 		setTotal(Object.values(products)?.reduce((acc,curr)=>acc+(+curr?.quantity*+curr?.items[0].effective_item_price),0));
 	},[products])
+  console.log(cart)
   return (
-	<div className=' bg-slate-200 min-h-screen relative p-10'>
-		{total>0&&(<CartItemsContainer restaurant={restaurantDetails} products={products} total={total} setCartData={setCartData} cartData={cartData}/>)}
-		{total<=0&&(<EmptyCart/>)}
-	</div>
+    <CartComponent index={index} restaurant={restaurantDetails} products={products} total={total} setCartData={setCarts} cartData={cart}/>
+    )
+}
+
+const CartsContainer = () => {
+	document.title = "Cart | Lumega Eats"
+	const {carts,setCarts} = useContext(CartsContext);
+  const [cartsNumber, setCartsNumber] = useState(0)
+  useEffect(()=>{
+	setCartsNumber(Object.values(carts)?.reduce((acc,curr)=>
+		acc + (Object.keys(curr.cartItems).length)
+		,0))
+  },[carts])
+  return (
+    <div className=' bg-slate-200 min-h-screen relative p-10'>
+      {cartsNumber<=0&&(<EmptyCart/>)}
+      {Object.keys(carts).map(key=>(
+		  <>
+			{Object.values(carts[key]?.cartItems)?.length>0&&(<CartContainer index={key} cart={carts[key]} setCarts={setCarts}/>)}
+		  </>	
+	  	)
+	  )}
+    </div>
   )
 }
 
-export default CartContainer;
+export default CartsContainer

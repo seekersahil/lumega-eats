@@ -1,16 +1,16 @@
 import { Navbar,Footer } from "../../components";
-import { CartContainer } from '../../containers';
+import { CartsContainer } from '../../containers';
 
-const Cart = () => {
+const Carts = () => {
   return (
 	<>
 		<Navbar/>
 		<div className='cart pt-20'>
-			<CartContainer/>
+			<CartsContainer/>
 		</div>
 		<Footer/>
 	</>
   )
 }
 
-export default Cart
+export default Carts

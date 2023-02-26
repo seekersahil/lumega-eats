@@ -1,18 +1,18 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import ReactDOM from "react-dom/client";
-import { foodDelivery, auth } from "./modules";
+import { foodDelivery } from "./modules";
 import { RouterProvider, Outlet, createBrowserRouter } from "react-router-dom";
 
 const FoodDelivery = () => {
-  const cart = foodDelivery.useCart();
-  const [cartData, setCartData] = useState(cart);
+  const cartsData = foodDelivery.useCarts();
+  const [carts, setCarts] = useState(cartsData);
   return (
     <>
-      <foodDelivery.CartContext.Provider
-        value={{ cartData: cartData, setCartData: setCartData }}
+      <foodDelivery.CartsContext.Provider
+        value={{ carts: carts, setCarts: setCarts }}
       >
         <Outlet />
-      </foodDelivery.CartContext.Provider>
+      </foodDelivery.CartsContext.Provider>
     </>
   );
 };

@@ -1,7 +1,5 @@
-import { useState } from "react";
-import { Home, Error, RestaurantMenu, Cart } from "./pages";
-import { CartContext, useCart } from "./utils";
-import { Outlet, useOutletContext } from "react-router-dom";
+import { Home, Error, RestaurantMenu, Carts } from "./pages";
+import { CartsContext, useCarts } from "./utils";
 const routes = [
   {
     path: "/",
@@ -13,21 +11,13 @@ const routes = [
   },
   {
     path: "/cart",
-    element: <Cart />,
+    element: <Carts />,
   },
 ];
-const App = () => {
-  const cart = useCart();
-  const [cartData, setCartData] = useState(cart);
-  return (
-    <>
-      <CartContext.Provider
-        value={{ cartData: cartData, setCartData: setCartData }}
-      >
-        <Outlet />
-      </CartContext.Provider>
-    </>
-  );
-};
 
-export default { routes, Error, App, CartContext, useCart };
+export default {
+  routes,
+  Error,
+  CartsContext,
+  useCarts,
+};
