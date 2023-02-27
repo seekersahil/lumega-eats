@@ -40,7 +40,6 @@ const RestaurantCard = ({restaurant}) => {
 
 const RestaurantList = () => {
   const [listFilter, setListFilter] = useState("RELEVANCE");
-
   let restaurantData = useRestaurantListImport(listFilter);
   let restaurantList = restaurantData.restaurantList;
   let sorts = restaurantData.sorts;

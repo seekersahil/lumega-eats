@@ -1,12 +1,15 @@
-import React,{useEffect,useState,useContext} from 'react'
+import React ,{ useEffect,useState,useContext } from 'react'
 import { useParams } from 'react-router-dom';
-import { useRestaurantInfoImport } from '../../utils';
-import {AiFillStar} from "react-icons/ai";
-import {MdLocalOffer} from "react-icons/md";
-import {BiFoodTag} from "react-icons/bi";
+import { useRestaurantInfoImport, CartsContext,Shimmer } from '../../utils';
+import { AiFillStar } from "react-icons/ai";
+import { MdLocalOffer } from "react-icons/md";
+import { BiFoodTag } from "react-icons/bi";
 import "./MenuContainer.css";
 
 const RestaurantHeader = ({restaurant}) => {
+	if(JSON.stringify(restaurant)==="{}"){
+		return <Shimmer.ShimmerHeader/>
+	}
 	const {
 		cloudinaryImageId,
 		name,
@@ -61,14 +64,120 @@ const RestaurantHeader = ({restaurant}) => {
 }
 
 const RestaurantMenu = ({restaurant}) => {
-	
+
+	const {carts,setCarts} = useContext(CartsContext);
 	const widgetContents = document.querySelectorAll(".widget-content");
 	const [activeWidget, setActiveWidget] = useState(widgetContents[0]?.id)
+	const [cartItems,setCartItems] = useState([]);
+	useEffect(()=>{
+		if(carts.hasOwnProperty(restaurant.id)){
+			setCartItems(carts[restaurant.id].cartItems)
+		}
+		console.log(cartItems)
+	},[carts])
+
+	const addToCart = (item) => {
+		if(!carts.hasOwnProperty(restaurant.id)){
+			const newCart = {
+				[restaurant.id]:{
+					cartMeta:{
+						restaurant_details: {
+							...restaurant
+						},
+					},
+					cartItems: {},
+				},
+			}
+			setCarts((prev)=>({
+				...prev,
+				...newCart
+			}))
+		} 
+		let newItem = {
+			[item.id]:{
+				quantity: 1,
+				items: [
+					{
+						...item
+					},
+				],
+				itemId: item.id,
+			}
+		}
+		setCarts((prev)=>({
+			...prev,
+			[restaurant.id]:{
+				...prev[restaurant.id],
+				cartItems: {
+					...prev[restaurant.id].cartItems,
+					...newItem
+				},
+			}
+		}))
+	}
+
+	const updateQuantity = (index, id, newQuantity) => {
+		if(newQuantity>0){
+			if(!carts.hasOwnProperty(restaurant.id)){
+				const newCart = {
+					[restaurant.id]:{
+						cartMeta:{
+							restaurant_details: {
+								...restaurant
+							},
+						},
+						cartItems: {},
+					},
+				}
+				setCarts((prev)=>({
+					...prev,
+					...newCart
+				}))
+			} 
+			setCarts((prev)=>({
+				...prev,
+				[index]:{
+					...prev[index],
+					cartItems: {
+						...prev[index].cartItems,
+						[id]:{
+							...prev[index].cartItems[id],
+							quantity: newQuantity
+						}
+					}
+				}
+			}))
+		} else {
+			const {
+				[id]:{},
+				...rest
+			} = carts[index].cartItems;
+			if(JSON.stringify(rest)==="{}"){
+				const {
+					[index]:{},
+					...restCarts
+				} = carts;
+				setCarts({
+					...restCarts
+				})
+			}
+			else{
+				setCarts((prev)=>({
+					...prev,
+					[index]:{
+						...prev[index],
+						cartItems: {
+							...rest
+						}
+					}
+				}));
+			}
+		}
+	};
 	
 	const scrollFunction = ()=>{
 		widgetContents.forEach((section)=>{
 			if (window.pageYOffset > section.offsetTop){
-				console.log(section.id)
 				setActiveWidget(section.id);
 			}
 		});	
@@ -88,7 +197,7 @@ const RestaurantMenu = ({restaurant}) => {
 		});
 		
 	}, []);
-	if(!Object.keys(restaurant).length) return <h2>Loading</h2>
+	if(!Object.keys(restaurant).length) return <Shimmer.ShimmerMenu/>
 
 	const {
 		menu
@@ -103,7 +212,7 @@ const RestaurantMenu = ({restaurant}) => {
 		<div className="menu-items flex w-full relative">
 			<div id='widgets-menu' className="widgets-container w-4/12 h-full">
 				<div className="category-container flex flex-col text-right py-10 h-full">
-				{widgets?.map(item=>
+				{widgets?.filter(widget=>widget.entities?.length>0).map(item=>
 						<a href={'#'+item.name}><p className={'widgets-menu-item text-lg cursor-pointer my-1 hover:text-orange-400 pr-4'+(activeWidget===item.name?" text-orange-400 font-semibold border-r-4 border-orange-400":" text-black")}>{item.name}</p></a>
 					)
 				}
@@ -111,7 +220,7 @@ const RestaurantMenu = ({restaurant}) => {
 			</div>
 			<div id="menu-items" className="menu-items-container w-full flex flex-col px-16 max-h-[menu-items] overflow-y-auto scroll-my-1">
 				{
-					widgets?.map(widget=>{
+					widgets?.filter(widget=>widget.entities?.length>0).map(widget=>{
 						return (
 							<div id={widget.name} className="widget-content min-h-screen flex flex-col justify-center" key={widget.name}>
 								{ widget.entities?.length>0 && (
@@ -141,12 +250,19 @@ const RestaurantMenu = ({restaurant}) => {
 													</div>
 													<div className="add-action w-3/12 relative">
 														{cloudinaryImageId&&(<img className='rounded-md' src={ process.env.IMAGE_API_URL + cloudinaryImageId } alt="" />)}
-														<button className='absolute bottom-[-10%] left-1/2 translate-x-[-50%] bg-white py-1 px-10 border text-green-600 uppercase'>
-															<div className="button-content relative">
+														{!cartItems.hasOwnProperty(id)&&(<button className='absolute bottom-[-10%] left-1/2 translate-x-[-50%] bg-white py-1 px-10 border text-green-600 uppercase'>
+															<button onClick={()=>addToCart(item)} className="button-content relative">
 																Add
 																<div className="absolute top-[-25%] right-[-100%]">+</div>
-															</div>
-														</button>
+															</button>
+														</button>)}
+														{cartItems.hasOwnProperty(id)&&(
+														<div className="absolute flex bottom-[-10%] left-1/2 translate-x-[-50%] bg-white px-4 border text-green-600 uppercase">
+															<button onClick={()=>updateQuantity(restaurant.id,id,cartItems[id]?.quantity-1)} className="minus p-2">-</button>
+															<div className="quantity p-2">{cartItems[id]?.quantity}</div>
+															<button onClick={()=>updateQuantity(restaurant.id,id,cartItems[id]?.quantity+1)} className="plus p-2">+</button>
+														</div>
+														)}
 													</div>
 												</div>
 											</div>
@@ -177,6 +293,7 @@ const RestaurantProfile = ({restaurant}) => {
 const MenuContainer = () => {
 	const {id} = useParams();
 	const restaurant = useRestaurantInfoImport(id);
+
 	
 	document.title = `${restaurant.name} - ${restaurant.city} | Lumega Eats`;
 	return <RestaurantProfile restaurant={restaurant}/>

@@ -8,12 +8,9 @@ import { CartsContext} from "../../utils";
 
 const Navbar = ({sticky = true}) => {
   const {carts}= useContext(CartsContext);
-  const [cartsNumber, setCartsNumber] = useState(0)
-  useEffect(()=>{
-	setCartsNumber(Object.values(carts)?.reduce((acc,curr)=>
-		acc + (Object.keys(curr.cartItems).length)
-		,0))
-  },[carts])
+  console.log(carts)
+  const cartNumber = Object.values(carts).reduce((acc,curr)=>acc + (Object.keys(curr.cartItems).length)
+  ,0);
   return (
 	<nav className={"flex justify-between px-10 py-3 shadow-sm bg-white w-full z-10"+(sticky?" fixed":"")}>
 		<div className="logo">
@@ -28,14 +25,6 @@ const Navbar = ({sticky = true}) => {
 					name:"Home",
 					link:"/"
 				},
-				{
-					name:"About Us",
-					link:"/about"
-				},
-				{
-					name:"FAQs",
-					link:"/faqs"
-				}
 			].map((item,index) =>(
 				<li className="list-none m-5 cursor-pointer" key={"nav-item-"+index}>
 					<Link to={item.link}>
@@ -46,7 +35,7 @@ const Navbar = ({sticky = true}) => {
 			<div className="cart flex m-5 justify-center content-center">
 				<Link to="/cart">
 					<div className="flex carts">
-						<AiOutlineShoppingCart className="m-1"/>({cartsNumber})
+						<AiOutlineShoppingCart className="m-1"/>({cartNumber})
 					</div>
 				</Link>
 			</div>

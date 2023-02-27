@@ -12,7 +12,6 @@ const useRestaurantInfoImport = (id) => {
     const json = await data.json();
     setRestaurantMenu(json.data);
   }
-
   useEffect(() => {
     importRestaurantInfo(id);
   }, []);

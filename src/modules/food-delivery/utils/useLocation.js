@@ -14,7 +14,7 @@ const useLocation = () => {
         })
       );
     }
-  });
+  }, []);
   return coordinates;
 };
 

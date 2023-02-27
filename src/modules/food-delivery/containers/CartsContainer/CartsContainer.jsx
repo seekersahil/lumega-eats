@@ -59,16 +59,16 @@ const CartComponent = ({restaurant,products,total,cartData,index,setCartData}) =
 			}
 		}
 	};
-	const{name,area_name,cloudinary_image_id} = restaurant;
+	const{name,area,cloudinaryImageId} = restaurant;
 	return (
 		<div className="bg-white min-h-96 h-full shadow-sm p-10 mb-10 flex flex-col">
 			<div className="restaurant-details flex">
 				<div className="restaurant-image">
-					<img src={process.env.CART_IMAGE_URL+cloudinary_image_id} alt={name} />
+					<img src={process.env.CART_IMAGE_URL+cloudinaryImageId} alt={name} />
 				</div>
 				<div className=" mx-10 my-5 restaurant-meta flex flex-col h-full justify-center">
 					<h1 className="restaurant-name text-xl font-semibold">{name}</h1>
-					<p className="restaurant-area text-gray-600">{area_name}</p>
+					<p className="restaurant-area text-gray-600">{area}</p>
 					<div className="line bg-gray-900 w-2/4 h-0.5 mt-5"></div>
 				</div>
 			</div>
@@ -76,7 +76,7 @@ const CartComponent = ({restaurant,products,total,cartData,index,setCartData}) =
 				{
 					Object.values(products)?.map(item=>{
 						const { items, quantity, itemId } = item;
-						const { name, effective_item_price, isVeg } = items[0];
+						const { name, price, isVeg } = items[0];
 						return (
 							(quantity>0&&<div className="cart-item flex justify-between">
 								<div className="w-5/12 flex">
@@ -88,7 +88,7 @@ const CartComponent = ({restaurant,products,total,cartData,index,setCartData}) =
 									<div className="quantity p-2">{quantity}</div>
 									<button onClick={()=>updateQuantity(index,itemId,quantity+1)} className="plus p-2">+</button>
 								</div>
-								<div className="price flex items-center">₹ {+effective_item_price*quantity}</div>
+								<div className="price flex items-center">₹ {+price/100*quantity}</div>
 							</div>)
 						)
 					})
@@ -111,7 +111,7 @@ const CartContainer = ({cart, index, setCarts}) => {
 		setProducts(cart[index]?.cartItems)
 	},[cart])
   useEffect(()=>{
-		setTotal(Object.values(products)?.reduce((acc,curr)=>acc+(+curr?.quantity*+curr?.items[0].effective_item_price),0));
+		setTotal(Object.values(products)?.reduce((acc,curr)=>acc+(+curr?.quantity*+(curr?.items[0].price/100)),0));
 	},[products])
   return (
     <CartComponent index={index} restaurant={restaurantDetails} products={products} total={total} setCartData={setCarts} cartData={cart}/>
@@ -119,8 +119,8 @@ const CartContainer = ({cart, index, setCarts}) => {
 }
 
 const CartsContainer = () => {
-	document.title = "Cart | Lumega Eats"
-	const {carts,setCarts} = useContext(CartsContext);
+  document.title = "Cart | Lumega Eats"
+  const {carts,setCarts} = useContext(CartsContext);
   const [cartsNumber, setCartsNumber] = useState(0)
   useEffect(()=>{
 	setCartsNumber(Object.values(carts)?.reduce((acc,curr)=>
