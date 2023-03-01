@@ -6,13 +6,25 @@ import { RouterProvider, Outlet, createBrowserRouter } from "react-router-dom";
 const FoodDelivery = () => {
   const cartsData = foodDelivery.useCarts();
   const [carts, setCarts] = useState(cartsData);
+  const wishlistData = foodDelivery.useWishlist();
+  const [wishlist, setWishlist] = useState(wishlistData);
   return (
     <>
-      <foodDelivery.CartsContext.Provider
-        value={{ carts: carts, setCarts: setCarts }}
+      <foodDelivery.WishlistContext.Provider
+        value={{
+          wishlist: wishlist,
+          setWishlist: setWishlist,
+        }}
       >
-        <Outlet />
-      </foodDelivery.CartsContext.Provider>
+        <foodDelivery.CartsContext.Provider
+          value={{
+            carts: carts,
+            setCarts: setCarts,
+          }}
+        >
+          <Outlet />
+        </foodDelivery.CartsContext.Provider>
+      </foodDelivery.WishlistContext.Provider>
     </>
   );
 };

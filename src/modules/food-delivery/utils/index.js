@@ -4,3 +4,4 @@ export { default as useRestaurantInfoImport } from "./useRestaurantInfoImport";
 export { default as useLocation } from "./useLocation";
 export { default as useUpdateProductInCart } from "./useUpdateProductInCart";
 export { CartsContext, useCarts } from "./carts";
+export { WishlistContext, useWishlist } from "./wishlist";

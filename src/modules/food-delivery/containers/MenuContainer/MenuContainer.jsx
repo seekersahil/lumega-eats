@@ -1,7 +1,7 @@
 import React ,{ useEffect,useState,useContext } from 'react'
 import { useParams } from 'react-router-dom';
-import { useRestaurantInfoImport, CartsContext,Shimmer } from '../../utils';
-import { AiFillStar } from "react-icons/ai";
+import { useRestaurantInfoImport, CartsContext,Shimmer, WishlistContext } from '../../utils';
+import { AiFillStar, AiOutlineHeart, AiFillHeart } from "react-icons/ai";
 import { MdLocalOffer } from "react-icons/md";
 import { BiFoodTag } from "react-icons/bi";
 import "./MenuContainer.css";
@@ -66,15 +66,10 @@ const RestaurantHeader = ({restaurant}) => {
 const RestaurantMenu = ({restaurant}) => {
 
 	const {carts,setCarts} = useContext(CartsContext);
+	const {wishlist,setWishlist} = useContext(WishlistContext);
 	const widgetContents = document.querySelectorAll(".widget-content");
 	const [activeWidget, setActiveWidget] = useState(widgetContents[0]?.id)
-	const [cartItems,setCartItems] = useState([]);
-	useEffect(()=>{
-		if(carts.hasOwnProperty(restaurant.id)){
-			setCartItems(carts[restaurant.id].cartItems)
-		}
-		console.log(cartItems)
-	},[carts])
+	
 
 	const addToCart = (item) => {
 		if(!carts.hasOwnProperty(restaurant.id)){
@@ -116,6 +111,71 @@ const RestaurantMenu = ({restaurant}) => {
 		}))
 	}
 
+	const toggleWishlist = (item) => {
+		if(!wishlist.hasOwnProperty(restaurant.id)){
+			const newWishlist = {
+				[restaurant.id]:{
+					wishlistMeta:{
+						restaurant_details: {
+							...restaurant
+						},
+					},
+					wishlistItems: {},
+				},
+			}
+			setWishlist((prev)=>({
+				...prev,
+				...newWishlist
+			}))
+		} 
+		if(!wishlist[restaurant.id]?.wishlistItems?.hasOwnProperty(item.id)){
+			let newItem = {
+				[item.id]:{
+					items: [
+						{
+							...item
+						},
+					],
+					itemId: item.id,
+				}
+			}
+			setWishlist((prev)=>({
+				...prev,
+				[restaurant.id]:{
+					...prev[restaurant.id],
+					wishlistItems: {
+						...prev[restaurant.id].wishlistItems,
+						...newItem
+					},
+				}
+			}))
+		} else{
+			const {
+				[item.id]:{},
+				...rest
+			} = wishlist[restaurant.id].wishlistItems;
+			if(JSON.stringify(rest)==="{}"){
+				const {
+					[restaurant.id]:{},
+					...restWishlist
+				} = wishlist;
+				setWishlist({
+					...restWishlist
+				})
+			}
+			else{
+				setWishlist((prev)=>({
+					...prev,
+					[restaurant.id]:{
+						...prev[restaurant.id],
+						wishlistItems: {
+							...rest
+						}
+					}
+				}));
+			}
+		}
+	}
 	const updateQuantity = (index, id, newQuantity) => {
 		if(newQuantity>0){
 			if(!carts.hasOwnProperty(restaurant.id)){
@@ -221,6 +281,7 @@ const RestaurantMenu = ({restaurant}) => {
 			<div id="menu-items" className="menu-items-container w-full flex flex-col px-16 max-h-[menu-items] overflow-y-auto scroll-my-1">
 				{
 					widgets?.filter(widget=>widget.entities?.length>0).map(widget=>{
+						const cartItems = carts[restaurant.id]?.cartItems;
 						return (
 							<div id={widget.name} className="widget-content min-h-screen flex flex-col justify-center" key={widget.name}>
 								{ widget.entities?.length>0 && (
@@ -239,6 +300,10 @@ const RestaurantMenu = ({restaurant}) => {
 											attributes,
 											cloudinaryImageId
 										} = item;
+										
+										const itemInWishlist = wishlist[restaurant.id]?.wishlistItems?.hasOwnProperty(item.id);
+										const itemInCart = carts[restaurant.id]?.cartItems?.hasOwnProperty(item.id);
+										
 										return (
 											<div key={id}>
 												<div className="w-full h-0.5 bg-gray-100 first:display-none" ></div>
@@ -250,19 +315,25 @@ const RestaurantMenu = ({restaurant}) => {
 													</div>
 													<div className="add-action w-3/12 relative">
 														{cloudinaryImageId&&(<img className='rounded-md' src={ process.env.IMAGE_API_URL + cloudinaryImageId } alt="" />)}
-														{!cartItems.hasOwnProperty(id)&&(<button className='absolute bottom-[-10%] left-1/2 translate-x-[-50%] bg-white py-1 px-10 border text-green-600 uppercase'>
-															<button onClick={()=>addToCart(item)} className="button-content relative">
-																Add
+														{!itemInCart&&(<button onClick={()=>addToCart(item)} className='absolute bottom-[-10%] left-1/2 translate-x-[-50%] bg-white py-1 px-10 border text-green-600 uppercase'>
+															<button className="button-content relative">
+																Cart
 																<div className="absolute top-[-25%] right-[-100%]">+</div>
 															</button>
 														</button>)}
-														{cartItems.hasOwnProperty(id)&&(
+														{itemInCart&&(
 														<div className="absolute flex bottom-[-10%] left-1/2 translate-x-[-50%] bg-white px-4 border text-green-600 uppercase">
 															<button onClick={()=>updateQuantity(restaurant.id,id,cartItems[id]?.quantity-1)} className="minus p-2">-</button>
 															<div className="quantity p-2">{cartItems[id]?.quantity}</div>
 															<button onClick={()=>updateQuantity(restaurant.id,id,cartItems[id]?.quantity+1)} className="plus p-2">+</button>
 														</div>
 														)}
+														<button onClick={()=>toggleWishlist(item)} className='group absolute top-[-20%] left-1/2 translate-x-[-50%] bg-white py-1 px-10 border text-red-600 uppercase'>
+															<button className={"button-content relative text-sm"+(itemInWishlist?" font-bold":"")}>
+																Wishlist
+																<div className="absolute top-0 right-[-65%] group-hover:scale-[1.2]">{itemInWishlist?(<AiFillHeart/>):(<AiOutlineHeart/>)}</div>
+															</button>
+														</button>
 													</div>
 												</div>
 											</div>
