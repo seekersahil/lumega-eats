@@ -131,6 +131,7 @@ const RestaurantMenu = ({restaurant}) => {
 		if(!wishlist[restaurant.id]?.wishlistItems?.hasOwnProperty(item.id)){
 			let newItem = {
 				[item.id]:{
+					quantity: 1,
 					items: [
 						{
 							...item
@@ -235,28 +236,31 @@ const RestaurantMenu = ({restaurant}) => {
 		}
 	};
 	
-	const scrollFunction = ()=>{
-		widgetContents.forEach((section)=>{
-			if (window.pageYOffset > section.offsetTop){
-				setActiveWidget(section.id);
-			}
-		});	
-		const menu = document.getElementById("widgets-menu");
-		const stickyHeight = menu?.offsetTop + menu?.offsetHeight*2;
-		if (window.pageYOffset >= stickyHeight) {
-			menu?.classList.add("sticky");
-		} else {
-			menu?.classList.remove("sticky");
-		}
-	};
+	
 
 	useEffect(() => {
-		window.addEventListener("scroll",scrollFunction);
-		return (()=>{
-			window.removeEventListener("scroll",scrollFunction);
-		});
-		
+		const scrollFunction = () => {
+			console.log("scrolling")
+			widgetContents.forEach((section)=>{
+				if (window.pageYOffset > section.offsetTop){
+					setActiveWidget(section.id);
+				}
+			});	
+			const menu = document.getElementById("widgets-menu");
+			const stickyHeight = menu?.offsetTop + menu?.offsetHeight*2;
+			if (window.pageYOffset >= stickyHeight) {
+				menu?.classList.add("sticky");
+			} else {
+				menu?.classList.remove("sticky");
+			}
+		};
+		setActiveWidget(widgetContents[0]?.id);
+		window.addEventListener("scroll", scrollFunction);
+		return function (){
+			window.removeEventListener("scroll", scrollFunction);
+		};
 	}, []);
+
 	if(!Object.keys(restaurant).length) return <Shimmer.ShimmerMenu/>
 
 	const {
