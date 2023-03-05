@@ -80,19 +80,13 @@ const cartSlice = createSlice({
         }
       }
     },
-    clearCart: () => {
-      return {
-        1: {
-          cartMeta: {
-            restaurant_details: {},
-          },
-          cartItems: {},
-        },
-      };
+    moveWishlistToCart: (state, action) => {
+      const { wishlist } = action.payload;
+      return { ...wishlist };
     },
   },
 });
 
-export const { addItem, updateItem, clearCart } = cartSlice.actions;
+export const { addItem, updateItem, moveWishlistToCart } = cartSlice.actions;
 
 export default cartSlice.reducer;

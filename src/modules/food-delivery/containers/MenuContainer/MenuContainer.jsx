@@ -78,10 +78,10 @@ const RestaurantMenu = ({restaurant}) => {
 	
 	const dispatch = useDispatch();
 	const handleAddItem = (item) => {
-		dispatch(addItem({item: item,restaurant: restaurant}));
+		dispatch(addItem({item,restaurant}));
 	}
 	const handleUpdateQuantity = (item,newQuantity) => {
-		dispatch(updateItem({item: item,restaurant: restaurant, newQuantity: newQuantity}));
+		dispatch(updateItem({item,restaurant,newQuantity}));
 	}
 
 

@@ -3,6 +3,8 @@ import { Link } from "react-router-dom";
 import { AiOutlineShoppingCart, AiFillDelete, AiTwotoneDelete } from "react-icons/ai";
 import { BiFoodTag} from "react-icons/bi";
 import { WishlistContext } from '../../utils';
+import { useDispatch } from 'react-redux';
+import { moveWishlistToCart } from '../../utils/store/cartSlice';
 
 const EmptyWishlist= () => {
 	return (
@@ -21,7 +23,7 @@ const WishlistComponent = ({restaurant,products,wishlistData,setWishlistData}) =
 		const {
 			[id]:{},
 			...rest
-		} = wishlistData[index].wishlistItems;
+		} = wishlistData[index]?.wishlistItems;
 		if(JSON.stringify(rest)==="{}"){
 			removeRestaurantFromWishlist(restaurant);
 		}
@@ -48,11 +50,18 @@ const WishlistComponent = ({restaurant,products,wishlistData,setWishlistData}) =
 		})
 	}
 
+	const dispatch = useDispatch();
 	const moveToCart = (restaurant) => {
-		const {wishlist,setWishlist} = useContext(WishlistContext);
+		let wishlist = {
+			[restaurant.id]:{
+				cartMeta:{...wishlistData[restaurant.id]?.wishlistMeta},
+				cartItems:{...wishlistData[restaurant.id]?.wishlistItems}
+			}
+		};
+		dispatch(moveWishlistToCart({wishlist}));
+		removeRestaurantFromWishlist(restaurant);
 	}
 
-	console.log(restaurant)
 	const{name,area,cloudinaryImageId,slug,id,areaSlug} = restaurant;
 	return (
 		<div className="bg-white min-h-96 h-full shadow-sm p-10 mb-10 flex flex-col relative">
@@ -81,9 +90,9 @@ const WishlistComponent = ({restaurant,products,wishlistData,setWishlistData}) =
 				{
 					Object.values(products)?.map(item=>{
 						const { items } = item;
-						const { name, price, isVeg } = items[0];
+						const { name, price, isVeg,id } = items[0];
 						return (
-							<div className="wishlist-item flex justify-between border-t-2">
+							<div key={id} className="wishlist-item flex justify-between border-t-2">
 								<div className="w-5/12 flex">
 									<div className={"food-tag flex items-center"+(isVeg?" text-[#0f8a65]":" text-[#e43b4f]")}><BiFoodTag/></div>
 									<div className=" ml-5 food-name flex items-center">{name}</div>

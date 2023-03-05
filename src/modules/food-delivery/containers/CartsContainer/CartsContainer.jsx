@@ -20,13 +20,13 @@ const EmptyCart= () => {
 const CartComponent = ({restaurant,products,total}) =>{
 	const dispatch = useDispatch()
 	const handleUpdateQuantity = (item,newQuantity) => {
-		dispatch(updateItem({item: item, restaurant: restaurant, newQuantity: newQuantity}));
+		dispatch(updateItem({item, restaurant, newQuantity}));
 	}
-	const{name,area,cloudinaryImageId} = restaurant;
+	const{name,area,cloudinaryImageId,slug,id,areaSlug} = restaurant;
 	
 	return (
 		<div className="bg-white min-h-96 h-full shadow-sm p-10 mb-10 flex flex-col">
-			<div className="restaurant-details flex">
+			<Link to={`/restaurant/${areaSlug}/${slug}/${id}`} className="restaurant-details flex">
 				<div className="restaurant-image">
 					<img src={process.env.CART_IMAGE_URL+cloudinaryImageId} alt={name} />
 				</div>
@@ -35,7 +35,7 @@ const CartComponent = ({restaurant,products,total}) =>{
 					<p className="restaurant-area text-gray-600">{area}</p>
 					<div className="line bg-gray-900 w-2/4 h-0.5 mt-5"></div>
 				</div>
-			</div>
+			</Link>
 			<div className="cart-items flex flex-col mt-10">
 				{
 					Object.values(products)?.map(item=>{
