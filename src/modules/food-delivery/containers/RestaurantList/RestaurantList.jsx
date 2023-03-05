@@ -63,7 +63,7 @@ const RestaurantList = () => {
 			<ul className="restaurant-list-filters flex">
 				<li className='m-3'>Filters:</li>
 				{sorts?.map((item)=>(
-					<li key={item.key} onClick={()=>sortList(item)} className={"m-3 hover:font-semibold text-gray-500 cursor-pointer" + (listFilter === item.key ? " font-semibold" : "")}>
+					<li key={item.key} onClick={()=>sortList(item)} className={"m-3 hover:text-gray-900 text-gray-500 cursor-pointer" + (listFilter === item.key ? " font-semibold text-gray-900" : "")}>
 						{item.title}
 					</li>
 				))}

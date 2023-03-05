@@ -5,7 +5,6 @@ import { AiFillStar, AiOutlineHeart, AiFillHeart } from "react-icons/ai";
 import { MdLocalOffer } from "react-icons/md";
 import { BiFoodTag } from "react-icons/bi";
 import "./MenuContainer.css";
-import { InView } from 'react-intersection-observer';
 
 const RestaurantHeader = ({restaurant}) => {
 	if(JSON.stringify(restaurant)==="{}"){
@@ -241,6 +240,12 @@ const RestaurantMenu = ({restaurant}) => {
 
 	useEffect(() => {
 		const scrollFunction = () => {
+			console.log("scrolling")
+			widgetContents.forEach((section)=>{
+				if (window.pageYOffset > section.offsetTop){
+					setActiveWidget(section.id);
+				}
+			});	
 			const menu = document.getElementById("widgets-menu");
 			const stickyHeight = menu?.offsetTop + menu?.offsetHeight*2;
 			if (window.pageYOffset >= stickyHeight) {
@@ -266,18 +271,14 @@ const RestaurantMenu = ({restaurant}) => {
 		items,
 		widgets
 	} = menu;
+
 	return (
-		<InView className="menu-items flex w-full relative">
+		<div className="menu-items flex w-full relative">
 			<div id='widgets-menu' className="widgets-container w-4/12 h-full">
 				<div className="category-container flex flex-col text-right py-10 h-full">
-				{
-					widgets?.filter(widget=>widget.entities?.length>0).map(item=>{
-						return(
-							<a onClick={()=>setActiveWidget(item.name)} href={'#'+item.name}>
-								<p className={'widgets-menu-item text-lg cursor-pointer my-1 hover:text-orange-400 pr-4'+(activeWidget===item.name?" text-orange-400 font-semibold border-r-4 border-orange-400":" text-black")}>{item.name}</p>
-							</a>
-						)
-					})
+				{widgets?.filter(widget=>widget.entities?.length>0).map(item=>
+						<a href={'#'+item.name}><p className={'widgets-menu-item text-lg cursor-pointer my-1 hover:text-orange-400 pr-4'+(activeWidget===item.name?" text-orange-400 font-semibold border-r-4 border-orange-400":" text-black")}>{item.name}</p></a>
+					)
 				}
 				</div>
 			</div>
@@ -286,17 +287,7 @@ const RestaurantMenu = ({restaurant}) => {
 					widgets?.filter(widget=>widget.entities?.length>0).map(widget=>{
 						const cartItems = carts[restaurant.id]?.cartItems;
 						return (
-							<InView 
-								delay={500} 
-								threshold={0.01} 
-								onChange={(inView, entry) => {
-									setActiveWidget(entry.target.id)
-									console.log(entry.target.id)
-								}} 
-								id={widget.name} 
-								className="widget-content min-h-screen flex flex-col justify-center" 
-								key={widget.name}
-							>
+							<div id={widget.name} className="widget-content min-h-screen flex flex-col justify-center" key={widget.name}>
 								{ widget.entities?.length>0 && (
 									<div className="widget-header py-5">
 										<h1 className=' text-2xl font-bold'>{widget.name}</h1>
@@ -341,7 +332,7 @@ const RestaurantMenu = ({restaurant}) => {
 															<button onClick={()=>updateQuantity(restaurant.id,id,cartItems[id]?.quantity+1)} className="plus p-2">+</button>
 														</div>
 														)}
-														<button onClick={()=>toggleWishlist(item)} className='group absolute top-[-10%] left-1/2 translate-x-[-50%] bg-white py-1 px-10 border text-red-600 uppercase'>
+														<button onClick={()=>toggleWishlist(item)} className='group absolute top-[-20%] left-1/2 translate-x-[-50%] bg-white py-1 px-10 border text-red-600 uppercase'>
 															<button className={"button-content relative text-sm"+(itemInWishlist?" font-bold":"")}>
 																Wishlist
 																<div className="absolute top-0 right-[-65%] group-hover:scale-[1.2]">{itemInWishlist?(<AiFillHeart/>):(<AiOutlineHeart/>)}</div>
@@ -354,14 +345,14 @@ const RestaurantMenu = ({restaurant}) => {
 									})
 								}
 								{ widget.entities?.length>0 && (
-									<div className="w-full h-0.5 bg-gray-600 my-10"></div>
+									<div className="w-full h-0.5 bg-gray-600 my-10" ></div>
 								) }
-							</InView>
+							</div>
 						)
 					})
 				}
 			</div>
-		</InView>
+		</div>
 	);
 }
 

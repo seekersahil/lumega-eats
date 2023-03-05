@@ -9,8 +9,8 @@ import { CartsContext, WishlistContext } from "../../utils";
 const Navbar = ({sticky = true}) => {
   const {carts}= useContext(CartsContext);
   const {wishlist}= useContext(WishlistContext);
-  const cartNumber = Object.values(carts).reduce((acc,curr)=>acc + (Object.keys(curr.cartItems).length),0);
-  const wishlistNumber = Object.values(wishlist).reduce((acc,curr)=>acc + (Object.keys(curr.wishlistItems).length),0);
+  const cartNumber = Object.values(carts || []).reduce((acc,curr)=>acc + (Object.keys(curr.cartItems).length),0);
+  const wishlistNumber = Object.values(wishlist || []).reduce((acc,curr)=>acc + (Object.keys(curr.wishlistItems).length),0);
   return (
 	<nav className={"flex justify-between px-10 py-3 shadow-sm bg-white w-full z-10"+(sticky?" fixed":"")}>
 		<div className="logo">

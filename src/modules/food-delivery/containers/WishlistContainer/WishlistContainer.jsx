@@ -48,6 +48,10 @@ const WishlistComponent = ({restaurant,products,wishlistData,setWishlistData}) =
 		})
 	}
 
+	const moveToCart = (restaurant) => {
+		const {wishlist,setWishlist} = useContext(WishlistContext);
+	}
+
 	console.log(restaurant)
 	const{name,area,cloudinaryImageId,slug,id,areaSlug} = restaurant;
 	return (
@@ -99,7 +103,7 @@ const WishlistComponent = ({restaurant,products,wishlistData,setWishlistData}) =
 }
 
 const WishlistContainer = ({wishlist, index, setWishlist}) => {
-	const products = wishlist[index]?.wishlistItems;
+  const products = wishlist[index]?.wishlistItems;
   const restaurantDetails = wishlist[index]?.wishlistMeta?.restaurant_details;
   return (
     <WishlistComponent restaurant={restaurantDetails} products={products} setWishlistData={setWishlist} wishlistData={wishlist}/>
