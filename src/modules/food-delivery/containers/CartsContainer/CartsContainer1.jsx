@@ -1,8 +1,7 @@
 import React,{useState, useEffect, useContext} from 'react';
 import { Link } from "react-router-dom";
 import { BiFoodTag } from "react-icons/bi";
-import { useDispatch, useSelector } from "react-redux";
-import { updateItem } from "../../utils/store/cartSlice";
+import { CartsContext } from '../../utils';
 
 const EmptyCart= () => {
 	return (
@@ -17,13 +16,50 @@ const EmptyCart= () => {
 	)
 }
 
-const CartComponent = ({restaurant,products,total}) =>{
-	const dispatch = useDispatch()
-	const handleUpdateQuantity = (item,newQuantity) => {
-		dispatch(updateItem({item: item, restaurant: restaurant, newQuantity: newQuantity}));
-	}
+const CartComponent = ({restaurant,products,total,cartData,index,setCartData}) =>{
+	const updateQuantity = (index, id, newQuantity) => {
+		if(newQuantity>0){
+			setCartData((prev)=>({
+				...prev,
+				[index]:{
+					...prev[index],
+					cartItems: {
+						...prev[index].cartItems,
+						[id]:{
+							...prev[index].cartItems[id],
+							quantity: newQuantity
+						}
+					}
+				}
+			}))
+		} else {
+			const {
+				[id]:{},
+				...rest
+			} = cartData[index].cartItems;
+			if(JSON.stringify(rest)==="{}"){
+				const {
+					[index]:{},
+					...restCarts
+				} = cartData;
+				setCartData({
+					...restCarts
+				})
+			}
+			else{
+				setCartData((prev)=>({
+					...prev,
+					[index]:{
+						...prev[index],
+						cartItems: {
+							...rest
+						}
+					}
+				}));
+			}
+		}
+	};
 	const{name,area,cloudinaryImageId} = restaurant;
-	
 	return (
 		<div className="bg-white min-h-96 h-full shadow-sm p-10 mb-10 flex flex-col">
 			<div className="restaurant-details flex">
@@ -39,7 +75,7 @@ const CartComponent = ({restaurant,products,total}) =>{
 			<div className="cart-items flex flex-col mt-10">
 				{
 					Object.values(products)?.map(item=>{
-						const { items, quantity } = item;
+						const { items, quantity, itemId } = item;
 						const { name, price, isVeg } = items[0];
 						return (
 							(quantity>0&&<div className="cart-item flex justify-between">
@@ -48,9 +84,9 @@ const CartComponent = ({restaurant,products,total}) =>{
 									<div className=" ml-5 food-name flex items-center">{name}</div>
 								</div>
 								<div className="text-green-700 font-semibold quantity-button flex justify-between items-center border my-2">
-									<button onClick={()=>handleUpdateQuantity(items[0],quantity-1)} className="minus p-2">-</button>
+									<button onClick={()=>updateQuantity(index,itemId,quantity-1)} className="minus p-2">-</button>
 									<div className="quantity p-2">{quantity}</div>
-									<button onClick={()=>handleUpdateQuantity(items[0],quantity+1)} className="plus p-2">+</button>
+									<button onClick={()=>updateQuantity(index,itemId,quantity+1)} className="plus p-2">+</button>
 								</div>
 								<div className="price flex items-center">₹ {+price/100*quantity}</div>
 							</div>)
@@ -67,27 +103,36 @@ const CartComponent = ({restaurant,products,total}) =>{
 	);
 }
 
-const CartContainer = ({cart}) => {
-	const products = Object.values(cart)[0]?.cartItems;
+const CartContainer = ({cart, index, setCarts}) => {
+	const [products,setProducts] = useState({});
 	const [total, setTotal] = useState(0);
-	const restaurantDetails = Object.values(cart)[0]?.cartMeta?.restaurant_details;
-	useEffect(()=>{
+  const restaurantDetails = cart[index]?.cartMeta?.restaurant_details;
+  useEffect(()=>{
+		setProducts(cart[index]?.cartItems)
+	},[cart])
+  useEffect(()=>{
 		setTotal(Object.values(products)?.reduce((acc,curr)=>acc+(+curr?.quantity*+(curr?.items[0].price/100)),0));
 	},[products])
-	return (
-		<CartComponent restaurant={restaurantDetails} products={products} total={total}/>
-	)
+  return (
+    <CartComponent index={index} restaurant={restaurantDetails} products={products} total={total} setCartData={setCarts} cartData={cart}/>
+    )
 }
 
 const CartsContainer = () => {
   document.title = "Cart | Lumega Eats"
-  const cart = useSelector(store => store.cart);
-  const cartLength = Object.values(Object.values(cart)[0]?.cartItems || {})?.length;
+  const {carts,setCarts} = useContext(CartsContext);
+  const [cartsNumber, setCartsNumber] = useState(0)
+  useEffect(()=>{
+	setCartsNumber(Object.values(carts)?.reduce((acc,curr)=>
+		acc + (Object.keys(curr.cartItems).length)
+		,0))
+  },[carts])
   return (
     <div className=' bg-slate-200 min-h-screen relative p-10'>
-      {cartLength<=0&&(<EmptyCart/>)}
-      {cartLength>0 && (
-		<CartContainer cart={cart}/>
+      {cartsNumber<=0&&(<EmptyCart/>)}
+      {Object.keys(carts).map(key=>(
+			<CartContainer index={key} cart={carts} setCarts={setCarts}/>
+	  	)
 	  )}
     </div>
   )

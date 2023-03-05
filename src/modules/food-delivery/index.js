@@ -1,5 +1,11 @@
 import { Home, Error, RestaurantMenu, Carts, Wishlist } from "./pages";
-import { CartsContext, useCarts, WishlistContext, useWishlist } from "./utils";
+import {
+  CartsContext,
+  useCarts,
+  WishlistContext,
+  useWishlist,
+  store,
+} from "./utils";
 const routes = [
   {
     path: "/",
@@ -26,4 +32,5 @@ export default {
   useCarts,
   WishlistContext,
   useWishlist,
+  store,
 };

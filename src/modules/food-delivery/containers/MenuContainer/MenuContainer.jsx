@@ -6,6 +6,9 @@ import { MdLocalOffer } from "react-icons/md";
 import { BiFoodTag } from "react-icons/bi";
 import "./MenuContainer.css";
 import { InView } from 'react-intersection-observer';
+import { addItem,updateItem } from '../../utils/store/cartSlice';
+import {useDispatch, useSelector} from 'react-redux';
+
 
 const RestaurantHeader = ({restaurant}) => {
 	if(JSON.stringify(restaurant)==="{}"){
@@ -23,6 +26,7 @@ const RestaurantHeader = ({restaurant}) => {
 		costForTwo,
 		aggregatedDiscountInfo,
 	} = restaurant;
+
 	return (
 		<div className={`menu-header bg-gray-900 text-white flex justify-between`}>
 			<div className="image-container m-10 flex items-center justify-center w-full ">
@@ -66,51 +70,20 @@ const RestaurantHeader = ({restaurant}) => {
 
 const RestaurantMenu = ({restaurant}) => {
 
-	const {carts,setCarts} = useContext(CartsContext);
+	const cart = useSelector(store => store.cart);
 	const {wishlist,setWishlist} = useContext(WishlistContext);
 	const widgetContents = document.querySelectorAll(".widget-content");
 	const [activeWidget, setActiveWidget] = useState(widgetContents[0]?.id)
 	
-
-	const addToCart = (item) => {
-		if(!carts.hasOwnProperty(restaurant.id)){
-			const newCart = {
-				[restaurant.id]:{
-					cartMeta:{
-						restaurant_details: {
-							...restaurant
-						},
-					},
-					cartItems: {},
-				},
-			}
-			setCarts((prev)=>({
-				...prev,
-				...newCart
-			}))
-		} 
-		let newItem = {
-			[item.id]:{
-				quantity: 1,
-				items: [
-					{
-						...item
-					},
-				],
-				itemId: item.id,
-			}
-		}
-		setCarts((prev)=>({
-			...prev,
-			[restaurant.id]:{
-				...prev[restaurant.id],
-				cartItems: {
-					...prev[restaurant.id].cartItems,
-					...newItem
-				},
-			}
-		}))
+	
+	const dispatch = useDispatch();
+	const handleAddItem = (item) => {
+		dispatch(addItem({item: item,restaurant: restaurant}));
 	}
+	const handleUpdateQuantity = (item,newQuantity) => {
+		dispatch(updateItem({item: item,restaurant: restaurant, newQuantity: newQuantity}));
+	}
+
 
 	const toggleWishlist = (item) => {
 		if(!wishlist.hasOwnProperty(restaurant.id)){
@@ -178,64 +151,6 @@ const RestaurantMenu = ({restaurant}) => {
 			}
 		}
 	}
-	const updateQuantity = (index, id, newQuantity) => {
-		if(newQuantity>0){
-			if(!carts.hasOwnProperty(restaurant.id)){
-				const newCart = {
-					[restaurant.id]:{
-						cartMeta:{
-							restaurant_details: {
-								...restaurant
-							},
-						},
-						cartItems: {},
-					},
-				}
-				setCarts((prev)=>({
-					...prev,
-					...newCart
-				}))
-			} 
-			setCarts((prev)=>({
-				...prev,
-				[index]:{
-					...prev[index],
-					cartItems: {
-						...prev[index].cartItems,
-						[id]:{
-							...prev[index].cartItems[id],
-							quantity: newQuantity
-						}
-					}
-				}
-			}))
-		} else {
-			const {
-				[id]:{},
-				...rest
-			} = carts[index].cartItems;
-			if(JSON.stringify(rest)==="{}"){
-				const {
-					[index]:{},
-					...restCarts
-				} = carts;
-				setCarts({
-					...restCarts
-				})
-			}
-			else{
-				setCarts((prev)=>({
-					...prev,
-					[index]:{
-						...prev[index],
-						cartItems: {
-							...rest
-						}
-					}
-				}));
-			}
-		}
-	};
 	
 	
 
@@ -284,14 +199,13 @@ const RestaurantMenu = ({restaurant}) => {
 			<div id="menu-items" className="menu-items-container w-full flex flex-col px-16 max-h-[menu-items] overflow-y-auto scroll-my-1">
 				{
 					widgets?.filter(widget=>widget.entities?.length>0).map(widget=>{
-						const cartItems = carts[restaurant.id]?.cartItems;
+						const cartItems = cart[restaurant.id]?.cartItems;
 						return (
 							<InView 
 								delay={500} 
 								threshold={0.01} 
 								onChange={(inView, entry) => {
 									setActiveWidget(entry.target.id)
-									console.log(entry.target.id)
 								}} 
 								id={widget.name} 
 								className="widget-content min-h-screen flex flex-col justify-center" 
@@ -315,7 +229,7 @@ const RestaurantMenu = ({restaurant}) => {
 										} = item;
 										
 										const itemInWishlist = wishlist[restaurant.id]?.wishlistItems?.hasOwnProperty(item.id);
-										const itemInCart = carts[restaurant.id]?.cartItems?.hasOwnProperty(item.id);
+										const itemInCart = cart[restaurant.id]?.cartItems?.hasOwnProperty(item.id);
 										
 										return (
 											<div key={id}>
@@ -328,7 +242,7 @@ const RestaurantMenu = ({restaurant}) => {
 													</div>
 													<div className="add-action w-3/12 relative">
 														{cloudinaryImageId&&(<img className='rounded-md' src={ process.env.IMAGE_API_URL + cloudinaryImageId } alt="" />)}
-														{!itemInCart&&(<button onClick={()=>addToCart(item)} className='absolute bottom-[-10%] left-1/2 translate-x-[-50%] bg-white py-1 px-10 border text-green-600 uppercase'>
+														{!itemInCart&&(<button onClick={()=>handleAddItem(item)} className='absolute bottom-[-10%] left-1/2 translate-x-[-50%] bg-white py-1 px-10 border text-green-600 uppercase'>
 															<button className="button-content relative">
 																Cart
 																<div className="absolute top-[-25%] right-[-100%]">+</div>
@@ -336,9 +250,9 @@ const RestaurantMenu = ({restaurant}) => {
 														</button>)}
 														{itemInCart&&(
 														<div className="absolute flex bottom-[-10%] left-1/2 translate-x-[-50%] bg-white px-4 border text-green-600 uppercase">
-															<button onClick={()=>updateQuantity(restaurant.id,id,cartItems[id]?.quantity-1)} className="minus p-2">-</button>
+															<button onClick={()=>handleUpdateQuantity(item,cartItems[id]?.quantity-1)} className="minus p-2">-</button>
 															<div className="quantity p-2">{cartItems[id]?.quantity}</div>
-															<button onClick={()=>updateQuantity(restaurant.id,id,cartItems[id]?.quantity+1)} className="plus p-2">+</button>
+															<button onClick={()=>handleUpdateQuantity(item,cartItems[id]?.quantity+1)} className="plus p-2">+</button>
 														</div>
 														)}
 														<button onClick={()=>toggleWishlist(item)} className='group absolute top-[-10%] left-1/2 translate-x-[-50%] bg-white py-1 px-10 border text-red-600 uppercase'>

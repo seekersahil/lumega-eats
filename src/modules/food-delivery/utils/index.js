@@ -5,3 +5,4 @@ export { default as useLocation } from "./useLocation";
 export { default as useUpdateProductInCart } from "./useUpdateProductInCart";
 export { CartsContext, useCarts } from "./carts";
 export { WishlistContext, useWishlist } from "./wishlist";
+export { default as store } from "./store/store";
