@@ -7,13 +7,12 @@ const useRestaurantInfoImport = (id) => {
   async function importRestaurantInfo(id) {
     try {
       const data = await fetch(
-        process.env.RESTAURANT_MENU_API +
-          `/?lat=${coordinates.lat}&lng=${coordinates.lng}&menuId=${id}`
+        `https://justcors.com/${process.env.JUSTCORS_TOKEN}/${process.env.RESTAURANT_MENU_API}/?lat=${coordinates.lat}&lng=${coordinates.lng}&menuId=${id}`
       );
       const json = await data.json();
       setRestaurantMenu(json.data);
     } catch (err) {
-      return;
+      return err;
     }
   }
   useEffect(() => {

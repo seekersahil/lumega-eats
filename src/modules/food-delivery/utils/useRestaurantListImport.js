@@ -8,8 +8,7 @@ const useRestaurantListImport = (filter = "RELEVANCE") => {
   async function getRestaurantList(filter) {
     try {
       const data = await fetch(
-        process.env.RESTAURANTS_LIST_API +
-          `?lat=29.8042758&lng=76.4039016&sortBy=${filter}&page_type=DESKTOP_WEB_LISTING`
+        `https://justcors.com/${process.env.JUSTCORS_TOKEN}/${process.env.RESTAURANTS_LIST_API}?lat=29.8042758&lng=76.4039016&sortBy=${filter}&page_type=DESKTOP_WEB_LISTING`
       );
       const json = await data.json();
       let index = {
@@ -28,8 +27,8 @@ const useRestaurantListImport = (filter = "RELEVANCE") => {
         }
       });
       setSorts(json.data?.sorts);
-    } catch (e) {
-      return;
+    } catch (err) {
+      return err;
     }
   }
 

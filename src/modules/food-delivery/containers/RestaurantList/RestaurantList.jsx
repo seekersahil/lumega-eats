@@ -50,7 +50,6 @@ const RestaurantList = () => {
 		setListFilter(key);
 	}
   }
-
   if(restaurantList?.length === 0) {
 	return(
 			<Shimmer.ShimmerList repeat={12}/>

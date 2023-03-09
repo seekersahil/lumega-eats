@@ -35,7 +35,11 @@ const router = createBrowserRouter([
   {
     path: "/",
     element: <FoodDelivery />,
-    errorElement: <foodDelivery.Error />,
+    errorElement: (
+      <Provider store={foodDelivery.store}>
+        <foodDelivery.Error />
+      </Provider>
+    ),
     children: foodDelivery.routes,
   },
 ]);
