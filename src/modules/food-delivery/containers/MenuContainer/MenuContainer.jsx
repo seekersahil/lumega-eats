@@ -292,8 +292,9 @@ const MenuContainer = () => {
 	const {id} = useParams();
 	const restaurant = useRestaurantInfoImport(id);
 
-	
-	document.title = `${restaurant.name} - ${restaurant.city} | Lumega Eats`;
+	if(JSON.stringify(restaurant)!=="{}"){
+		document.title = `${restaurant.name} - ${restaurant.city} | Lumega Eats`;
+	}
 	return <RestaurantProfile restaurant={restaurant}/>
 }
 
