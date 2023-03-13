@@ -8,6 +8,7 @@ import "./MenuContainer.css";
 import { InView } from 'react-intersection-observer';
 import { addItem,updateItem } from '../../utils/store/cartSlice';
 import {useDispatch, useSelector} from 'react-redux';
+import { Modal } from '../../components';
 
 
 const RestaurantHeader = ({restaurant}) => {
@@ -77,13 +78,26 @@ const RestaurantMenu = ({restaurant}) => {
 	
 	
 	const dispatch = useDispatch();
-	const handleAddItem = (item) => {
+	const cartRestaurant = Object.values(cart)[0]?.cartMeta?.restaurant_details;
+	const [openConfirmationCartModal, setOpenConfirmationCartModal] = useState(false);
+	const [actionItem, setActionItem] = useState({});
+
+	const addItemToCart = (item,restaurant) => {
+		if(cartRestaurant?.id === restaurant?.id || JSON.stringify(cart) === "{}"){
+			handleAddItem(item,restaurant);
+		} else{
+			setActionItem(item);
+			setOpenConfirmationCartModal(true);
+		}
+	}
+	
+	const handleAddItem = (item,restaurant) => {
 		dispatch(addItem({item,restaurant}));
 	}
+	
 	const handleUpdateQuantity = (item,newQuantity) => {
 		dispatch(updateItem({item,restaurant,newQuantity}));
 	}
-
 
 	const toggleWishlist = (item) => {
 		if(!wishlist.hasOwnProperty(restaurant.id)){
@@ -183,6 +197,7 @@ const RestaurantMenu = ({restaurant}) => {
 	} = menu;
 	return (
 		<InView className="menu-items flex w-full relative">
+			<Modal heading="Move Restaurant to Cart?" text="You already have items from another Restaurant in the cart. This will replace existing cart items. Do you want to proceed?" actionText="Yes, Add to cart" open={openConfirmationCartModal} setOpen={ setOpenConfirmationCartModal} successAction={()=>handleAddItem(actionItem,restaurant)} />
 			<div id='widgets-menu' className="widgets-container w-4/12 h-full">
 				<div className="category-container flex flex-col text-right py-10 h-full">
 				{
@@ -242,7 +257,7 @@ const RestaurantMenu = ({restaurant}) => {
 													</div>
 													<div className="add-action w-3/12 relative">
 														{cloudinaryImageId&&(<img className='rounded-md' src={ process.env.IMAGE_API_URL + cloudinaryImageId } alt="" />)}
-														{!itemInCart&&(<button onClick={()=>handleAddItem(item)} className='absolute bottom-[-10%] left-1/2 translate-x-[-50%] bg-white py-1 px-10 border text-green-600 uppercase'>
+														{!itemInCart&&(<button onClick={()=>addItemToCart(item,restaurant)} className='absolute bottom-[-10%] left-1/2 translate-x-[-50%] bg-white py-1 px-10 border text-green-600 uppercase'>
 															<button className="button-content relative">
 																Cart
 																<div className="absolute top-[-25%] right-[-100%]">+</div>

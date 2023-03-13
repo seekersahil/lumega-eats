@@ -1,10 +1,11 @@
-import React,{useState, useEffect, useContext} from 'react';
+import React,{useState, useEffect, useContext, Fragment, useRef} from 'react';
 import { Link } from "react-router-dom";
 import { AiOutlineShoppingCart, AiFillDelete, AiTwotoneDelete } from "react-icons/ai";
 import { BiFoodTag} from "react-icons/bi";
 import { WishlistContext } from '../../utils';
-import { useDispatch } from 'react-redux';
+import { useDispatch,useSelector } from 'react-redux';
 import { moveWishlistToCart } from '../../utils/store/cartSlice';
+import { Modal } from '../../components';
 
 const EmptyWishlist= () => {
 	return (
@@ -17,6 +18,7 @@ const EmptyWishlist= () => {
 }
 
 const WishlistComponent = ({restaurant,products,wishlistData,setWishlistData}) =>{
+	
 	const removeItemFromWishlist = (item,restaurant) => {
 		const {id} = item;
 		const index =restaurant?.id;
@@ -51,11 +53,27 @@ const WishlistComponent = ({restaurant,products,wishlistData,setWishlistData}) =
 	}
 
 	const dispatch = useDispatch();
+	const cart = useSelector(store => store.cart);
+	const cartRestaurant = Object.values(cart)[0]?.cartMeta?.restaurant_details;
+	const [openConfirmationCartModal, setOpenConfirmationCartModal] = useState(false)
 	const moveToCart = (restaurant) => {
+		if(cartRestaurant?.id === restaurant?.id || JSON.stringify(cart) === "{}"){
+			proceedMoveToCart(restaurant);
+		} else{
+			setOpenConfirmationCartModal(true);
+		}
+	}
+	const proceedMoveToCart = (restaurant) => {
 		let wishlist = {
 			[restaurant.id]:{
-				cartMeta:{...wishlistData[restaurant.id]?.wishlistMeta},
-				cartItems:{...wishlistData[restaurant.id]?.wishlistItems}
+				cartMeta:{
+					...wishlistData[restaurant.id]?.wishlistMeta
+				},
+				cartItems:{
+					...cart[restaurant.id]?.cartItems,
+					...wishlistData[restaurant.id]?.wishlistItems
+				}
+				
 			}
 		};
 		dispatch(moveWishlistToCart({wishlist}));
@@ -63,8 +81,11 @@ const WishlistComponent = ({restaurant,products,wishlistData,setWishlistData}) =
 	}
 
 	const{name,area,cloudinaryImageId,slug,id,areaSlug} = restaurant;
+	
 	return (
+	
 		<div className="bg-white min-h-96 h-full shadow-sm p-10 mb-10 flex flex-col relative">
+			<Modal heading="Move Restaurant to Cart?" text="You already have items from another Restaurant in the cart. This will replace existing cart items. Do you want to proceed?" actionText="Yes, Add to cart" open={openConfirmationCartModal} setOpen={ setOpenConfirmationCartModal} successAction={()=>proceedMoveToCart(restaurant)} />
 			<div className="flex justify-between">
 				<Link to={`/restaurant/${areaSlug}/${slug}/${id}`} className="restaurant-details flex cursor-pointer">
 					<div className="restaurant-image">
@@ -108,6 +129,7 @@ const WishlistComponent = ({restaurant,products,wishlistData,setWishlistData}) =
 			</div>
 			
 		</div>
+		
 	);
 }
 

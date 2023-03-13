@@ -60,14 +60,7 @@ const cartSlice = createSlice({
           ...rest
         } = state[index]?.cartItems;
         if (JSON.stringify(rest) === "{}") {
-          return {
-            1: {
-              cartMeta: {
-                restaurant_details: {},
-              },
-              cartItems: {},
-            },
-          };
+          return {};
         } else {
           return {
             [index]: {
