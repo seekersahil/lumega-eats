@@ -1,8 +1,8 @@
-import React,{useState} from 'react';
+import React,{useEffect, useState} from 'react';
 import {Shimmer, useRestaurantListImport} from "../../utils";
 import { Link } from 'react-router-dom';
-import {AiFillStar} from "react-icons/ai";
-import {MdLocalOffer} from "react-icons/md";
+import { AiFillStar } from "react-icons/ai";
+import { MdLocalOffer } from "react-icons/md";
 
 const RestaurantCard = ({restaurant}) => {
 	const {
@@ -40,25 +40,39 @@ const RestaurantCard = ({restaurant}) => {
 
 const RestaurantList = () => {
   const [listFilter, setListFilter] = useState("RELEVANCE");
-  let restaurantData = useRestaurantListImport(listFilter);
-  let restaurantList = restaurantData.restaurantList;
-  let sorts = restaurantData.sorts;
-  
+  const [offset, setOffset] = useState(0)
+  let restaurantData = useRestaurantListImport(listFilter, offset);
+  const { restaurantList, sorts, totalOpenRestaurants, isFetchingMore, setIsFetchingMore } = restaurantData;
+
   const sortList = ({key}) => {
 	if(key !== listFilter){
-		restaurantData.restaurantList = [];
+		setOffset(0);
 		setListFilter(key);
 	}
   }
+
+  const handleScrolling = () => {
+	const { scrollTop, scrollHeight, clientHeight } = document.documentElement;
+	if (scrollTop + clientHeight >= scrollHeight - 5 && restaurantList.length>0) {
+	  setIsFetchingMore(true)
+	  setOffset(Math.min(restaurantList.length,totalOpenRestaurants-offset));
+	}
+  }
+  
+  useEffect(()=>{
+	window.addEventListener("scroll", handleScrolling );
+	return ()=>window.removeEventListener("scroll", handleScrolling);
+  },[]);
+
+
   if(restaurantList?.length === 0) {
-	return(
-			<Shimmer.ShimmerList repeat={12}/>
-	)}
+	return <Shimmer.ShimmerList repeat={12}/>
+  }
 
   return (
 	<div id='restaurant-list'>
 		<div className="restaurant-list-header ml-5 mt-10 px-5 flex justify-between">
-			<h1 className='text-3xl'><span className=' font-semibold'>{restaurantList?.length}</span> Restaurants</h1>
+			<h1 className='text-3xl'><span className=' font-semibold'>{totalOpenRestaurants}</span> Restaurants</h1>
 			<ul className="restaurant-list-filters flex">
 				<li className='m-3'>Filters:</li>
 				{sorts?.map((item)=>(
@@ -73,11 +87,15 @@ const RestaurantList = () => {
 			<div className="items-container  flex flex-wrap justify-center">
 			{
 				restaurantList?.map(
-					(restaurant) => <RestaurantCard restaurant={restaurant}/>
+					(restaurant) => {
+						if(restaurant.subtype === 'basic'){
+							return <RestaurantCard restaurant={restaurant}/>
+						}
+					}
 				)
 			}
+			{isFetchingMore && (<Shimmer.ShimmerList repeat={6}/>)}
 			</div>
-			
 		</div>
 	</div>
   )

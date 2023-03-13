@@ -1,4 +1,4 @@
-import { Home, Error, RestaurantMenu, Carts, Wishlist } from "./pages";
+import { Home, Error, RestaurantMenu, Carts, Wishlist, Search } from "./pages";
 import {
   CartsContext,
   useCarts,
@@ -22,6 +22,10 @@ const routes = [
   {
     path: "/wishlist",
     element: <Wishlist />,
+  },
+  {
+    path: "/search",
+    element: <Search />,
   },
 ];
 

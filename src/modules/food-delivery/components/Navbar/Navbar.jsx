@@ -1,8 +1,7 @@
-import React,{useContext, useState, useEffect} from 'react'
+import React,{useContext} from 'react'
 import logo from "../../../../assets/dark_icon.png";
 import {Link} from "react-router-dom";
 import {AiOutlineShoppingCart, AiOutlineHeart, AiFillHeart} from "react-icons/ai";
-import {FaUserCircle} from "react-icons/fa";
 import {SearchBarHeader} from "../SearchBar/SearchBar";
 import { WishlistContext } from "../../utils";
 import {useSelector} from 'react-redux';
@@ -47,9 +46,6 @@ const Navbar = ({sticky = true}) => {
 					</div>
 				</Link>
 			</div>
-			<Link to="/profile" className='flex m-5 justify-center content-center cursor-pointer'>
-				<FaUserCircle className='m-1'/> Login/Signup
-			</Link>
 		</ul>
 	</nav>
   )
