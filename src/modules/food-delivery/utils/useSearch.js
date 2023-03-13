@@ -17,7 +17,8 @@ const useSearch = (searchTerm = "") => {
   };
 
   useEffect(() => {
-    search(searchTerm);
+    const searchTimer = setTimeout(() => search(searchTerm), 500);
+    return () => clearTimeout(searchTimer);
   }, [searchTerm, coordinates]);
 
   return { suggestions };

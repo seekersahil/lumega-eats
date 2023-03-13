@@ -56,8 +56,14 @@ const Search = ({prevPath = "/"}) => {
 			</div>
 		</nav>
 		<div className="search-results flex flex-col items-center w-full">
-			{
-				suggestions.map((suggestion, index) => <Suggestion suggestion={suggestion} index={index}/>)
+			{suggestions.length>0 &&
+				suggestions.map((suggestion, index) => <Suggestion suggestion={suggestion} index={index}/>)}
+			{			
+				suggestions.length === 0 && (
+					<div className='no-suggestions'>
+						{(searchTerm === "" || searchTerm.length<3)? "Type to Search..." : "No Results Found"}
+					</div>
+				)
 			}
 		</div>
 	</>
