@@ -53,7 +53,7 @@ const useRestaurantListImport = (filter = "RELEVANCE", offset = 0) => {
 
   useEffect(() => {
     getRestaurantList(filter, offset);
-  }, [filter, offset]);
+  }, [filter, offset, coordinates]);
 
   return {
     restaurantList,

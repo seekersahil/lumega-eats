@@ -18,7 +18,7 @@ const useSearch = (searchTerm = "") => {
 
   useEffect(() => {
     search(searchTerm);
-  }, [searchTerm]);
+  }, [searchTerm, coordinates]);
 
   return { suggestions };
 };

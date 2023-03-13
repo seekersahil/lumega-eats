@@ -54,8 +54,8 @@ const RestaurantList = () => {
   const handleScrolling = () => {
 	const { scrollTop, scrollHeight, clientHeight } = document.documentElement;
 	if (scrollTop + clientHeight >= scrollHeight - 5) {
-		if(+totalSize-offset>0){
-			setOffset((prev)=>prev+Math.min(15,+totalSize-offset));
+		if(+totalSize>offset){
+			setOffset((prev)=>prev+Math.min(16,+totalSize-offset));
 		}
 	}
   }

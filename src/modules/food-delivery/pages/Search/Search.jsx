@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useNavigate} from "react-router-dom";
 import { FaArrowLeft, FaSearch } from 'react-icons/fa';
+import { ImCross } from 'react-icons/im';
 import { useSearch } from '../../utils';
 
 const Suggestion = ({suggestion,index}) => {
@@ -21,6 +22,7 @@ const Suggestion = ({suggestion,index}) => {
 }
 
 const Search = ({prevPath = "/"}) => {
+  document.title = "Search - Lumega Eats";
   const [searchTerm, setSearchTerm] = useState("");
   
   const handleKeyPress = (e) => {
@@ -46,9 +48,10 @@ const Search = ({prevPath = "/"}) => {
 				<FaArrowLeft className='text-slate-300 text-2xl'/>
 			</Link>
 			<div className='search-bar flex items-center justify-center w-full'>
-				<Link to="/search" className='cursor-pointer w-full mx-10 relative'>
+				<Link to="/search" className='w-full mx-10 relative'>
 					<input onChange={handleKeyPress} autoFocus type="text" placeholder='Search...' className='cursor-pointer search-input w-full border border-theme-color rounded-full py-2 px-5' value={searchTerm} />
-					<FaSearch className='absolute right-5 text-gray-200 search-input-active:text-black top-1/3'/>
+					{searchTerm===""&&(<FaSearch className='absolute right-5 text-gray-300 top-1/3'/>)}
+					{searchTerm!==""&&(<ImCross className='absolute right-5 text-black top-1/3' onClick={()=>setSearchTerm("")}/>)}
 				</Link>
 			</div>
 		</nav>
