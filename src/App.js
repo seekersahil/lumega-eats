@@ -31,18 +31,23 @@ const FoodDelivery = () => {
     </>
   );
 };
-const router = createBrowserRouter([
+const router = createBrowserRouter(
+  [
+    {
+      path: "/",
+      element: <FoodDelivery />,
+      errorElement: (
+        <Provider store={foodDelivery.store}>
+          <foodDelivery.Error />
+        </Provider>
+      ),
+      children: foodDelivery.routes,
+    },
+  ],
   {
-    path: "/",
-    element: <FoodDelivery />,
-    errorElement: (
-      <Provider store={foodDelivery.store}>
-        <foodDelivery.Error />
-      </Provider>
-    ),
-    children: foodDelivery.routes,
-  },
-]);
+    basename: "/projects/lumega-eats/",
+  }
+);
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(<RouterProvider router={router} />);

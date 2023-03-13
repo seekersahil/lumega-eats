@@ -61,7 +61,7 @@ const Search = ({prevPath = "/"}) => {
 			{			
 				suggestions.length === 0 && (
 					<div className='no-suggestions'>
-						{(searchTerm === "" || searchTerm.length<3)? "Type to Search..." : "No Results Found"}
+						{(searchTerm === "" || searchTerm.length < 3)? "Type to Search..." : "No Results Found"}
 					</div>
 				)
 			}

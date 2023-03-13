@@ -1,7 +1,8 @@
 {
   "name": "lumega-eats",
   "version": "1.0.0",
-  "description": "A food delivery App",
+  "description": "A Swiggy Clone Project",
+  "homepage": "https://dev.seekersahil.com/projects/lumega-eats/",
   "scripts": {
     "test": "jest",
     "start": "parcel index.html",
@@ -16,9 +17,10 @@
   "bugs": {
     "url": "https://github.com/seekersahil/lumega-eats/issues"
   },
-  "homepage": "https://github.com/seekersahil/lumega-eats#readme",
   "devDependencies": {
-    "parcel": "^2.8.3",
+    "autoprefixer": "^10.4.14",
+    "parcel": "^2.0.0-nightly.1254",
+    "parcel-bundler": "^1.12.5",
     "postcss": "^8.4.21",
     "process": "^0.11.10",
     "tailwindcss": "^3.2.7"

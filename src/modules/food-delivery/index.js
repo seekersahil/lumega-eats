@@ -28,7 +28,7 @@ const routes = [
     element: <Wishlist />,
   },
   {
-    path: "/search",
+    path: "/restaurant-search",
     element: <Search />,
   },
 ];
