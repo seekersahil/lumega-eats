@@ -3,7 +3,7 @@ import "./Shimmer.css";
 
 const ShimmerCard = () => {
   return (
-	<div className=' sm:w-1/3 md:w-1/4 lg:w-1/4 xl:w-1/5 flex flex-col mx-5 my-10 hover:shadow-lg h-60 bg-slate-100  justify-center items-center'>
+	<div className='sm:w-1/3 md:w-1/4 lg:w-1/4 xl:w-1/5 h-60 mx-5 my-10 bg-slate-100 flex justify-center items-center'>
 		<div className='text-gray-300'>Loading...</div>
 	</div>
   )
@@ -65,7 +65,7 @@ const ShimmerHeader = ({index}) => {
 }
 const ShimmerList = ({repeat}) => {
 	return (
-		<div key="shimmerList" className="restaurant-list-items flex flex-wrap justify-center my-5">
+		<div key="shimmerList" className="restaurant-list-items flex flex-wrap justify-center my-5 min-w-full">
 			{
 				[...Array(repeat)].map((e,index)=><ShimmerCard index={index}/>)
 			}

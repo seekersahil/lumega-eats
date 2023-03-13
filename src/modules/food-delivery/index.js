@@ -16,6 +16,10 @@ const routes = [
     element: <RestaurantMenu />,
   },
   {
+    path: "/restaurant/:id",
+    element: <RestaurantMenu />,
+  },
+  {
     path: "/cart",
     element: <Carts />,
   },

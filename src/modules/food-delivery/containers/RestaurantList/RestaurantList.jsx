@@ -42,7 +42,7 @@ const RestaurantList = () => {
   const [listFilter, setListFilter] = useState("RELEVANCE");
   const [offset, setOffset] = useState(0)
   let restaurantData = useRestaurantListImport(listFilter, offset);
-  const { restaurantList, sorts, totalOpenRestaurants, isFetchingMore, setIsFetchingMore } = restaurantData;
+  const { restaurantList, sorts, totalOpenRestaurants, isFetchingMore, totalSize, setTotalSize } = restaurantData;
 
   const sortList = ({key}) => {
 	if(key !== listFilter){
@@ -53,9 +53,10 @@ const RestaurantList = () => {
 
   const handleScrolling = () => {
 	const { scrollTop, scrollHeight, clientHeight } = document.documentElement;
-	if (scrollTop + clientHeight >= scrollHeight - 5 && restaurantList.length>0) {
-	  setIsFetchingMore(true)
-	  setOffset(Math.min(restaurantList.length,totalOpenRestaurants-offset));
+	if (scrollTop + clientHeight >= scrollHeight - 5) {
+		if(+totalSize-offset>0){
+			setOffset((prev)=>prev+Math.min(15,+totalSize-offset));
+		}
 	}
   }
   
@@ -72,7 +73,7 @@ const RestaurantList = () => {
   return (
 	<div id='restaurant-list'>
 		<div className="restaurant-list-header ml-5 mt-10 px-5 flex justify-between">
-			<h1 className='text-3xl'><span className=' font-semibold'>{totalOpenRestaurants}</span> Restaurants</h1>
+			<h1 className='text-3xl'><span className=' font-semibold'>{totalSize || totalOpenRestaurants}</span> Restaurants</h1>
 			<ul className="restaurant-list-filters flex">
 				<li className='m-3'>Filters:</li>
 				{sorts?.map((item)=>(
