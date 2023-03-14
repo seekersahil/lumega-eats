@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { Link, useNavigate} from "react-router-dom";
+import React, { useState } from 'react';
+import { Link } from "react-router-dom";
 import { FaArrowLeft, FaSearch } from 'react-icons/fa';
 import { ImCross } from 'react-icons/im';
 import { useSearch } from '../../utils';
@@ -21,25 +21,13 @@ const Suggestion = ({suggestion,index}) => {
 	)
 }
 
-const Search = ({prevPath = "/"}) => {
+const Search = () => {
   document.title = "Search - Lumega Eats";
   const [searchTerm, setSearchTerm] = useState("");
   
   const handleKeyPress = (e) => {
 	setSearchTerm(e.target.value);
   }
-  const navigate = useNavigate();
-  const escapeFunction = (e) => {
-	if(e.key === "Escape"){
-		return navigate(prevPath);
-	}
-  }
-  useEffect(()=>{
-	window.addEventListener("keyup",escapeFunction)
-	return ()=>{
-		window.removeEventListener("keyup",escapeFunction)
-	}
-  },[]) 
   const { suggestions } = useSearch(searchTerm); 
   return (
 	<>
